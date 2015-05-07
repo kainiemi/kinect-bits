@@ -3,6 +3,7 @@ Floor determination and removal
 
 Contributors: Petri Kainiemi, Ilkka Salento
 
+**Floor plane determination**
 
 Kinect offers an API to get floor clip plane. Floor clip plane can be obtained from `IBodyFrame` by calling `get_FloorClipPlane()` (Kinect for Windows 2.0 SDK). 
 Floor clip plane is a vector containing coefficients A, B, C and D of an estimated floor plane equation Ax + By + Cz +D = 0. 
@@ -16,6 +17,7 @@ pBodyFrame->get_FloorClipPlane(&fcp);
 //C = fcp.z
 //D = fcp.w
 ```  
+**Mapping from depth space to camera space**
 
 Floor clip plane is defined in camera space, thus depth frame needs to be mapped to camera space before calculation takes place.
 Depth frame can be mapped to camera space using `CoordinateMapper` class. It provides `MapDepthFrameToCameraSpace()` method, which maps entire depth frame to corresponding CameraSpacePoints. 
@@ -25,7 +27,9 @@ Depth frame can be mapped to camera space using `CoordinateMapper` class. It pro
 m_pCoordinateMapper->MapDepthFrameToCameraSpace(size, (UINT16*)srcDepthFrame, size, m_pCameraSpacePoints);
 ```
 
-Now that depth pixels place in camera space is known, distance can be calculated using basic point-plane distance equation.
+**Calculating distance to the floor plane**
+
+Now that depth pixels position in camera space is known, distance to the floor can be calculated using basic point-plane distance equation.
 
 ```C++
 CameraSpacePoint s;
@@ -34,4 +38,4 @@ float divisor = sqrtf(fcp.x * fcp.x + fcp.y * fcp.y + fcp.z * fcp.z);
 float dist = (fcp.x * s.X + fcp.y * s.Y + fcp.z * s.Z + fcp.w) / divisor;
 ```
 
-Note that distance is in meters. Floor removal can be done by simply comparing distance to predefined threshold value and discarding depth pixels that are close or opposite side of floor plane. 
+Note that distance is in meters. Floor removal can be done by simply comparing distance to predefined threshold value and discarding depth pixels that are close or opposite side of the floor plane. 
