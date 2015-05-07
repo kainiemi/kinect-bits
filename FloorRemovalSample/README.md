@@ -5,9 +5,8 @@ Contributors: Petri Kainiemi, Ilkka Salento
 
 **Floor plane determination**
 
-Kinect offers an API to get floor clip plane. Floor clip plane can be obtained from `IBodyFrame` by calling `get_FloorClipPlane()` (Kinect for Windows 2.0 SDK). 
+Kinect offers an API to get floor clip plane. Floor clip plane can be obtained from `IBodyFrame` by calling [`get_FloorClipPlane()`](https://github.com/kainiemi/kinect-bits/blob/master/FloorRemovalSample/DepthBasics.cpp#L264) (Kinect for Windows 2.0 SDK). 
 Floor clip plane is a vector containing coefficients A, B, C and D of an estimated floor plane equation Ax + By + Cz +D = 0. 
-
 
 ```C++
 Vector4 fcp;
@@ -20,7 +19,7 @@ pBodyFrame->get_FloorClipPlane(&fcp);
 **Mapping from depth space to camera space**
 
 Floor clip plane is defined in camera space, thus depth frame needs to be mapped to camera space before calculation takes place.
-Depth frame can be mapped to camera space using `CoordinateMapper` class. It provides `MapDepthFrameToCameraSpace()` method, which maps entire depth frame to corresponding CameraSpacePoints. 
+Depth frame can be mapped to camera space using `CoordinateMapper` class. It provides [`MapDepthFrameToCameraSpace()`](https://github.com/kainiemi/kinect-bits/blob/master/FloorRemovalSample/DepthBasics.cpp#L486) method, which maps entire depth frame to corresponding CameraSpacePoints. 
 `CameraSpacePoint` is x, y and z coordinates of point in meters. 
 
 ```C++
@@ -29,7 +28,7 @@ m_pCoordinateMapper->MapDepthFrameToCameraSpace(size, (UINT16*)srcDepthFrame, si
 
 **Calculating distance to the floor plane**
 
-Now that depth pixel's position in camera space is known, distance to the floor can be calculated using basic point-plane distance equation.
+Now that depth pixel's position in camera space is known, distance to the floor can be calculated using basic [point-plane distance equation](https://github.com/kainiemi/kinect-bits/blob/master/FloorRemovalSample/DepthBasics.cpp#L490).
 
 ```C++
 CameraSpacePoint s;
