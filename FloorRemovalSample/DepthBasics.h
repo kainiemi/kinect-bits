@@ -54,7 +54,7 @@ public:
     int                     Run(HINSTANCE hInstance, int nCmdShow);
 
 private:
-	        
+            
     HWND                    m_hWnd;
     INT64                   m_nStartTime;
     INT64                   m_nLastCounter;
@@ -63,9 +63,9 @@ private:
     DWORD                   m_nFramesSinceUpdate;
     bool                    m_bSaveScreenshot;
 
-	Vector4					m_fFloorClipPlane;
-	bool                    m_bFloorDetected;
-	CameraSpacePoint*		m_pCameraSpacePoints;
+    Vector4                 m_fFloorClipPlane;
+    bool                    m_bFloorDetected;
+    CameraSpacePoint*       m_pCameraSpacePoints;
 
     // Current Kinect
     IKinectSensor*          m_pKinectSensor;
@@ -73,17 +73,17 @@ private:
     // Depth reader
     IDepthFrameReader*      m_pDepthFrameReader;
 
-	// Body reader
-	IBodyFrameReader*      m_pBodyFrameReader;
+    // Body reader
+    IBodyFrameReader*      m_pBodyFrameReader;
 
-	// Coordinate mapper
-	ICoordinateMapper*      m_pCoordinateMapper;
+    // Coordinate mapper
+    ICoordinateMapper*      m_pCoordinateMapper;
 
     // Direct2D
     ImageRenderer*          m_pDrawDepth;
     ID2D1Factory*           m_pD2DFactory;
     RGBQUAD*                m_pDepthRGBX;
-	UINT16*					m_pDepthFrameCopy;
+    UINT16*                 m_pDepthFrameCopy;
     /// <summary>
     /// Main processing function
     /// </summary>
@@ -104,7 +104,7 @@ private:
     /// <param name="nMinDepth">minimum reliable depth</param>
     /// <param name="nMaxDepth">maximum reliable depth</param>
     /// </summary>
-	void                    ProcessDepth(INT64 nTime, const UINT16* pBuffer, int nHeight, int nWidth, USHORT nMinDepth, USHORT nMaxDepth);
+    void                    ProcessDepth(INT64 nTime, const UINT16* pBuffer, int nHeight, int nWidth, USHORT nMinDepth, USHORT nMaxDepth);
 
     /// <summary>
     /// Set the status bar message
@@ -135,4 +135,3 @@ private:
     /// <returns>indicates success or failure</returns>
     HRESULT                 SaveBitmapToFile(BYTE* pBitmapBits, LONG lWidth, LONG lHeight, WORD wBitsPerPixel, LPCWSTR lpszFilePath);
 };
-

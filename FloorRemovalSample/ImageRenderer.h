@@ -41,7 +41,7 @@ public:
     /// <param name="pImage">image data in RGBX format</param>
     /// <param name="cbImage">size of image data in bytes</param>
     /// <returns>indicates success or failure</returns>
-    HRESULT Draw(BYTE* pImage, unsigned long cbImage, int bbLeft, int bbTop, int bbRight, int bbBottom);
+	HRESULT Draw(BYTE* pImage, unsigned long cbImage, int bbLeft = 0, int bbTop = 0, int bbRight = 0, int bbBottom = 0);
 
 private:
     HWND                     m_hWnd;

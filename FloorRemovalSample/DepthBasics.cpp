@@ -20,7 +20,7 @@
 /// <param name="nCmdShow">whether to display minimized, maximized, or normally</param>
 /// <returns>status</returns>
 int APIENTRY wWinMain(
-	_In_ HINSTANCE hInstance,
+    _In_ HINSTANCE hInstance,
     _In_opt_ HINSTANCE hPrevInstance,
     _In_ LPWSTR lpCmdLine,
     _In_ int nShowCmd
@@ -46,31 +46,31 @@ CDepthBasics::CDepthBasics() :
     m_bSaveScreenshot(false),
     m_pKinectSensor(NULL),
     m_pDepthFrameReader(NULL),
-	m_pBodyFrameReader(NULL),
-	m_pCoordinateMapper(NULL),
-	m_pCameraSpacePoints(NULL),
+    m_pBodyFrameReader(NULL),
+    m_pCoordinateMapper(NULL),
+    m_pCameraSpacePoints(NULL),
     m_pD2DFactory(NULL),
     m_pDrawDepth(NULL),
     m_pDepthRGBX(NULL),
-	m_pDepthFrameCopy(NULL),
-	m_bFloorDetected(false),
-	m_fFloorClipPlane({0.0f, 0.0f, 0.0f, 0.0f })
-	
+    m_pDepthFrameCopy(NULL),
+    m_bFloorDetected(false),
+    m_fFloorClipPlane({0.0f, 0.0f, 0.0f, 0.0f})
+    
 {
     LARGE_INTEGER qpf = {0};
     if (QueryPerformanceFrequency(&qpf))
     {
         m_fFreq = double(qpf.QuadPart);
     }
-	
+    
     // create heap storage for depth pixel data in RGBX format
-	const int size = cDepthWidth * cDepthHeight;
+    const int size = cDepthWidth * cDepthHeight;
 
-	m_pDepthRGBX = new RGBQUAD[size];
+    m_pDepthRGBX = new RGBQUAD[size];
 
-	m_pDepthFrameCopy = new UINT16[size];
-		
-	m_pCameraSpacePoints = new CameraSpacePoint[size];
+    m_pDepthFrameCopy = new UINT16[size];
+        
+    m_pCameraSpacePoints = new CameraSpacePoint[size];
 
 }
   
@@ -93,17 +93,17 @@ CDepthBasics::~CDepthBasics()
         m_pDepthRGBX = NULL;
     }
 
-	if (m_pDepthFrameCopy)
-	{
-		delete[] m_pDepthFrameCopy;
-		m_pDepthFrameCopy = NULL;
-	}
+    if (m_pDepthFrameCopy)
+    {
+        delete[] m_pDepthFrameCopy;
+        m_pDepthFrameCopy = NULL;
+    }
 
-	if (m_pCameraSpacePoints)
-	{
-		delete[] m_pCameraSpacePoints;
-		m_pCameraSpacePoints = NULL;
-	}
+    if (m_pCameraSpacePoints)
+    {
+        delete[] m_pCameraSpacePoints;
+        m_pCameraSpacePoints = NULL;
+    }
     
     // clean up Direct2D
     SafeRelease(m_pD2DFactory);
@@ -111,11 +111,11 @@ CDepthBasics::~CDepthBasics()
     // done with depth frame reader
     SafeRelease(m_pDepthFrameReader);
 
-	// done with body frame reader
-	SafeRelease(m_pBodyFrameReader);
+    // done with body frame reader
+    SafeRelease(m_pBodyFrameReader);
 
-	// done with coordinate mapper
-	SafeRelease(m_pCoordinateMapper);
+    // done with coordinate mapper
+    SafeRelease(m_pCoordinateMapper);
 
     // close the Kinect Sensor
     if (m_pKinectSensor)
@@ -195,8 +195,8 @@ void CDepthBasics::Update()
     IDepthFrame* pDepthFrame = NULL;
 
     HRESULT hrDepth = m_pDepthFrameReader->AcquireLatestFrame(&pDepthFrame);
-		
-	if (SUCCEEDED(hrDepth))
+        
+    if (SUCCEEDED(hrDepth))
     {
         INT64 nTime = 0;
         IFrameDescription* pFrameDescription = NULL;
@@ -206,7 +206,7 @@ void CDepthBasics::Update()
         USHORT nDepthMaxDistance = 0;
         UINT nBufferSize = 0;
         UINT16 *pBuffer = NULL;
-		
+        
         HRESULT hr = pDepthFrame->get_RelativeTime(&nTime);
 
         if (SUCCEEDED(hr))
@@ -231,11 +231,11 @@ void CDepthBasics::Update()
 
         if (SUCCEEDED(hr))
         {
-			// In order to see the full range of depth (including the less reliable far field depth)
-			// we are setting nDepthMaxDistance to the extreme potential depth threshold
-			nDepthMaxDistance = USHRT_MAX;
+            // In order to see the full range of depth (including the less reliable far field depth)
+            // we are setting nDepthMaxDistance to the extreme potential depth threshold
+            nDepthMaxDistance = USHRT_MAX;
 
-			// Note:  If you wish to filter by reliable depth distance, uncomment the following line.
+            // Note:  If you wish to filter by reliable depth distance, uncomment the following line.
             //// hr = pDepthFrame->get_DepthMaxReliableDistance(&nDepthMaxDistance);
         }
 
@@ -243,35 +243,35 @@ void CDepthBasics::Update()
         {
              hr = pDepthFrame->AccessUnderlyingBuffer(&nBufferSize, &pBuffer);            
         }
-		
+        
         if (SUCCEEDED(hr))
         {
-			ProcessDepth(nTime, pBuffer, nWidth, nHeight, nDepthMinReliableDistance, nDepthMaxDistance);
+            ProcessDepth(nTime, pBuffer, nWidth, nHeight, nDepthMinReliableDistance, nDepthMaxDistance);
         }
 
         SafeRelease(pFrameDescription);
-	}
-	
+    }
+    
 
-	// Get floor clipping plane included in body frame   
-	IBodyFrame* pBodyFrame = NULL;
+    // Get floor clipping plane included in body frame   
+    IBodyFrame* pBodyFrame = NULL;
 
-	HRESULT hrBody = m_pBodyFrameReader->AcquireLatestFrame(&pBodyFrame);
+    HRESULT hrBody = m_pBodyFrameReader->AcquireLatestFrame(&pBodyFrame);
 
-	if (SUCCEEDED(hrBody))
-	{
-		Vector4 fcp;
-		HRESULT hr = pBodyFrame->get_FloorClipPlane(&fcp);
+    if (SUCCEEDED(hrBody))
+    {
+        Vector4 fcp;
+        HRESULT hr = pBodyFrame->get_FloorClipPlane(&fcp);
 
-		if (SUCCEEDED(hr))
-		{
-			m_fFloorClipPlane = fcp;
-			m_bFloorDetected = true;
-		}
-	}
+        if (SUCCEEDED(hr))
+        {
+            m_fFloorClipPlane = fcp;
+            m_bFloorDetected = true;
+        }
+    }
 
     SafeRelease(pDepthFrame);
-	SafeRelease(pBodyFrame);
+    SafeRelease(pBodyFrame);
 }
 
 /// <summary>
@@ -382,7 +382,7 @@ HRESULT CDepthBasics::InitializeDefaultSensor()
     {
         // Initialize the Kinect and get the depth reader
         IDepthFrameSource* pDepthFrameSource = NULL;
-		IBodyFrameSource* pBodyFrameSource = NULL;
+        IBodyFrameSource* pBodyFrameSource = NULL;
 
         hr = m_pKinectSensor->Open();
 
@@ -396,23 +396,23 @@ HRESULT CDepthBasics::InitializeDefaultSensor()
             hr = pDepthFrameSource->OpenReader(&m_pDepthFrameReader);
         }
         
-		if (SUCCEEDED(hr))
-		{
-			hr = m_pKinectSensor->get_BodyFrameSource(&pBodyFrameSource);
-		}
+        if (SUCCEEDED(hr))
+        {
+            hr = m_pKinectSensor->get_BodyFrameSource(&pBodyFrameSource);
+        }
 
-		if (SUCCEEDED(hr))
-		{
-			hr = pBodyFrameSource->OpenReader(&m_pBodyFrameReader);
-		}
+        if (SUCCEEDED(hr))
+        {
+            hr = pBodyFrameSource->OpenReader(&m_pBodyFrameReader);
+        }
 
-		if (SUCCEEDED(hr))
-		{
-			hr = m_pKinectSensor->get_CoordinateMapper(&m_pCoordinateMapper);
-		}
+        if (SUCCEEDED(hr))
+        {
+            hr = m_pKinectSensor->get_CoordinateMapper(&m_pCoordinateMapper);
+        }
         
         SafeRelease(pDepthFrameSource);
-		SafeRelease(pBodyFrameSource);
+        SafeRelease(pBodyFrameSource);
     }
 
     if (!m_pKinectSensor || FAILED(hr))
@@ -473,44 +473,44 @@ void CDepthBasics::ProcessDepth(INT64 nTime, const UINT16* pBuffer, int nWidth, 
     if (m_pDepthRGBX && pBuffer && (nWidth == cDepthWidth) && (nHeight == cDepthHeight))
     {
         RGBQUAD* pRGBX = m_pDepthRGBX;
-		UINT16* pDepthCopy = m_pDepthFrameCopy;
-		        
-        // Make a copy of received depth frame		
+        UINT16* pDepthCopy = m_pDepthFrameCopy;
+                
+        // Make a copy of received depth frame      
         const UINT16* srcDepthFrame = pBuffer;
-		memcpy(m_pDepthFrameCopy, srcDepthFrame, size*sizeof(UINT16));
-		
-		//only if floor plane is detected
-		if (m_bFloorDetected)
-		{			
-			//Map entire frame from depth space to camera space
-			m_pCoordinateMapper->MapDepthFrameToCameraSpace(size, (UINT16*)srcDepthFrame, size, m_pCameraSpacePoints);
+        memcpy(m_pDepthFrameCopy, srcDepthFrame, size*sizeof(UINT16));
+        
+        //only if floor plane is detected
+        if (m_bFloorDetected)
+        {           
+            //Map entire frame from depth space to camera space
+            m_pCoordinateMapper->MapDepthFrameToCameraSpace(size, (UINT16*)srcDepthFrame, size, m_pCameraSpacePoints);
 
-			Vector4 fcp = m_fFloorClipPlane;
+            Vector4 fcp = m_fFloorClipPlane;
 
-			float divisor = sqrtf(fcp.x * fcp.x + fcp.y * fcp.y + fcp.z * fcp.z);
+            float divisor = sqrtf(fcp.x * fcp.x + fcp.y * fcp.y + fcp.z * fcp.z);
 
-			CameraSpacePoint s;
+            CameraSpacePoint s;
 
-			for (int i = 0; i < size; i++)
-			{
-				s = m_pCameraSpacePoints[i];
-				
-				//Calculate distance from floor plane to current camera space point				
-				float dist = (fcp.x * s.X + fcp.y * s.Y + fcp.z * s.Z + fcp.w) / divisor;
+            for (int i = 0; i < size; i++)
+            {
+                s = m_pCameraSpacePoints[i];
+                
+                //Calculate distance from floor plane to current camera space point             
+                float dist = (fcp.x * s.X + fcp.y * s.Y + fcp.z * s.Z + fcp.w) / divisor;
 
-				//distance comparison in meters 0.02f = 2 cm
-				if (dist < 0.02f) 
-				{
-					pDepthCopy[i] = 0;
-				}
-			}			
-		}
-				
-		
-		const UINT16* pBufferEnd = pDepthCopy + size;
-		while (pDepthCopy < pBufferEnd)
+                //distance comparison in meters 0.02f = 2 cm
+                if (dist < 0.02f) 
+                {
+                    pDepthCopy[i] = 0;
+                }
+            }           
+        }
+                
+        
+        const UINT16* pBufferEnd = pDepthCopy + size;
+        while (pDepthCopy < pBufferEnd)
         {
-			USHORT depth = *pDepthCopy;
+            USHORT depth = *pDepthCopy;
 
             // To convert to a byte, we're discarding the most-significant
             // rather than least-significant bits.
@@ -526,12 +526,11 @@ void CDepthBasics::ProcessDepth(INT64 nTime, const UINT16* pBuffer, int nWidth, 
             pRGBX->rgbBlue  = intensity;
 
             ++pRGBX;
-			++pDepthCopy;
+            ++pDepthCopy;
         }
-
-		int min_x=0, min_y=0, max_x=0, max_y = 0;
+        
         // Draw the data with Direct2D
-        m_pDrawDepth->Draw(reinterpret_cast<BYTE*>(m_pDepthRGBX), cDepthWidth * cDepthHeight * sizeof(RGBQUAD), min_x, min_y, max_x, max_y);
+        m_pDrawDepth->Draw(reinterpret_cast<BYTE*>(m_pDepthRGBX), cDepthWidth * cDepthHeight * sizeof(RGBQUAD));
 
         if (m_bSaveScreenshot)
         {
