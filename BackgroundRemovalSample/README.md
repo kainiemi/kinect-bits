@@ -14,7 +14,7 @@ of the object from the depth frame. Visual Studio example project is included wi
 source code (modified copy of Kinect SDKs DepthSample) which includes also the source code of 
 the algorithm. Algorithm implementation can be found from DepthBasics.cpp starting on line 424.
 
-* [DepthBasics.cpp](https://github.com/kainiemi/kinect-bits/blob/master/BackgroundRemovalSample/DepthBasics.cpp)
+* [DepthBasics.cpp](https://github.com/kainiemi/kinect-bits/blob/master/BackgroundRemovalSample/DepthBasics.cpp#L424)
 
 **Background removal algorithm**
 
