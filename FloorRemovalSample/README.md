@@ -29,7 +29,7 @@ m_pCoordinateMapper->MapDepthFrameToCameraSpace(size, (UINT16*)srcDepthFrame, si
 
 **Calculating distance to the floor plane**
 
-Now that depth pixels position in camera space is known, distance to the floor can be calculated using basic point-plane distance equation.
+Now that depth pixel's position in camera space is known, distance to the floor can be calculated using basic point-plane distance equation.
 
 ```C++
 CameraSpacePoint s;
